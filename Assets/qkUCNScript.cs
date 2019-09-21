@@ -33,6 +33,7 @@ public class qkUCNScript : MonoBehaviour {
 	int moduleId;
 	private List<string> solvables;
 	private float waitTime = 20f;
+	private float waitTimeDuct = 10f;
 
 	//cam
 	public GameObject screen;
@@ -430,7 +431,7 @@ public class qkUCNScript : MonoBehaviour {
 		Vector3 startingpos = charact.transform.localPosition;
 		List<Vector3> templist = new List<Vector3>();
 		while(true){
-			yield return new WaitForSeconds(waitTime);
+			yield return new WaitForSeconds(waitTimeDuct);
 			Debug.LogFormat(getIndex(corridors, charact.transform.localPosition).ToString());
 			switch(getIndex(corridors, charact.transform.localPosition)){
 				case 0:
@@ -534,9 +535,11 @@ public class qkUCNScript : MonoBehaviour {
 			yield return new WaitForSeconds(1f);
 			if(TwitchPlaysActive){
 			waitTime=20f;
+			waitTimeDuct=10f;
 		}
 		else{
 			waitTime=10f;
+			waitTimeDuct=5f;
 		}
 		solvables=Bomb.GetSolvableModuleNames();
 		solvables.RemoveAll(item => item == "Ultimate Custom Night");
@@ -601,7 +604,8 @@ public class qkUCNScript : MonoBehaviour {
 		 GetComponent<KMBombModule>().HandlePass();
 		 yield break;
 	 }
-
+	
+	public string TwitchHelpMessage = "Use '!{0} cycle' to cycle cameras, vent and duct! Use '!{0} cyclecams' to cycle the cameras only! Use '!{0} cameras', '!{0} vent' and '{0} duct' to change the view! Use '!{0} cam1' '!{0} cam2' and '!{0} cam3' to see cameras manualy! Use '!{0} closedoor #' to close a door! For ex. '!{0} closedoor 1' will close the door for cam 1. Use '!{0} snare #' to snare a vent route! 1 = BL; 2 = T; 3 = BR;! Use '!{0} closeright' to close the right duct door and '!{0} closeleft' to close the left duct door! Use '!{0} setlure #' to set the lure to a corner! Corners are numbered from 1 to 12.";
 	IEnumerator ProcessTwitchCommand(string command){
 		yield return null;
 		string commandl = "";
@@ -659,7 +663,7 @@ public class qkUCNScript : MonoBehaviour {
 			yield break;
 		}
 		if(command.Equals("VENT")){
-			camButton.OnInteract();
+			ventButton.OnInteract();
 			yield break;
 		}
 		if(command.Equals("DUCT")){
