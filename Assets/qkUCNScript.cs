@@ -44,7 +44,7 @@ public class qkUCNScript : MonoBehaviour {
 	public KMSelectable camButton1;
 	public KMSelectable camButton2;
 	public KMSelectable camButton3;
-	public GameObject[] selections;
+	public GameObject[] selections;		//The green boxes behind the camera buttons
 	public GameObject[] doorButtons;
 	private int closedDoor = 0;
 	private int currentPlace = 0;
@@ -57,22 +57,22 @@ public class qkUCNScript : MonoBehaviour {
 	public Material cam3Yes;
 
 	//vent
-	public List<Vector3> route1;
-	public List<Vector3> route2;
-	public List<Vector3> route3;
+	public List<Vector3> route1;		//Right
+	public List<Vector3> route2;		//Middle
+	public List<Vector3> route3;		//Left
 	public GameObject[] VentSnares;
-	public GameObject VentCharacter1;
-	public GameObject VentCharacter2;
+	public GameObject VentCharacter1;		//Mangle
+	public GameObject VentCharacter2;		//Withered Chica
 
 	//duct
 	public GameObject[] ductDoorButtons;
 	public GameObject[] corridorButtons;
-	public GameObject ductCharacter1;
-	public GameObject ductCharacter2;
+	public GameObject ductCharacter1;		//Pigpatch
+	public GameObject ductCharacter2;		//Mr. Hippo
 	public GameObject audioLure;
 	public Material[] ductMaps;
 	public GameObject ductMap;
-	public List<Vector3> adj1;
+	public List<Vector3> adj1;				//positions adjacent to these buttons
 	public List<Vector3> adj2;
 	public List<Vector3> adj3;
 	public List<Vector3> adj4;
@@ -84,9 +84,9 @@ public class qkUCNScript : MonoBehaviour {
 	public List<Vector3> adj10;
 	public List<Vector3> adj11;
 	public List<Vector3> adj12;
-	public List<Vector3> corridors;
-	private bool rightOpen = false;
-	private bool stayinplace = false;
+	public List<Vector3> corridors;			//Clickable corners
+	private bool rightOpen = false;			//If true then right duct door is open otherwise left
+	private bool stayinplace = false;		//If true the character won't move on the next tick
 	
 
 	void Start(){
