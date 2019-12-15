@@ -35,7 +35,7 @@ public class qkUCNScript : MonoBehaviour {
 	private List<string> solvables;
 	private float waitTime = 20f;
 	private float waitTimeDuct = 10f;
-	private bool devMode = false;
+	private readonly bool devMode = false;
 	#endregion
 	
 	#region Cams
