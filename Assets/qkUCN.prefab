@@ -5951,12 +5951,12 @@ MonoBehaviour:
   - {fileID: 1211204250264970}
   - {fileID: 1258025692172832}
   - {fileID: 1064558029282046}
-  cam1No: {fileID: 2100000, guid: 8fa7b892cf5eb45de8a483fb65cf404d, type: 2}
-  cam1Yes: {fileID: 2100000, guid: 10fab5ade9fab42ce8429d2cf0ca88b9, type: 2}
-  cam2No: {fileID: 2100000, guid: 8fa7b892cf5eb45de8a483fb65cf404d, type: 2}
-  cam2Yes: {fileID: 2100000, guid: 10fab5ade9fab42ce8429d2cf0ca88b9, type: 2}
-  cam3No: {fileID: 2100000, guid: 8fa7b892cf5eb45de8a483fb65cf404d, type: 2}
-  cam3Yes: {fileID: 2100000, guid: 10fab5ade9fab42ce8429d2cf0ca88b9, type: 2}
+  cam1No: {fileID: 2100000, guid: 8a1be2f3320fd420ab4f8725525c749f, type: 2}
+  cam1Yes: {fileID: 2100000, guid: 35c14a5b6e076424a9647247547b1e5c, type: 2}
+  cam2No: {fileID: 2100000, guid: 6bcdd691361cc4523ab00e9f705c947e, type: 2}
+  cam2Yes: {fileID: 2100000, guid: 66dae5f618b744199aeb8c519b59ada5, type: 2}
+  cam3No: {fileID: 2100000, guid: df5bcaff9add645689941fe7ea956fdb, type: 2}
+  cam3Yes: {fileID: 2100000, guid: d7dbbd5b121c343cb829b3f5a995d0c8, type: 2}
   route1:
   - {x: -0.0597, y: 0.03, z: 0.06}
   - {x: -0.0427, y: 0.03, z: 0.06}

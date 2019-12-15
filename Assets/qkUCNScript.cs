@@ -6,7 +6,8 @@ using KModkit;
 using System.Linq;
 
 public class qkUCNScript : MonoBehaviour {
-	//general
+	#region Variables
+	#region General
 	public KMAudio Audio;
 	public Vector3 testvect;
 	public bool solved = false;
@@ -34,8 +35,10 @@ public class qkUCNScript : MonoBehaviour {
 	private List<string> solvables;
 	private float waitTime = 20f;
 	private float waitTimeDuct = 10f;
-
-	//cam
+	private bool devMode = false;
+	#endregion
+	
+	#region Cams
 	public GameObject screen;
 	public Material notSelected;
 	public Material selected;
@@ -55,16 +58,18 @@ public class qkUCNScript : MonoBehaviour {
 	public Material cam2Yes;
 	public Material cam3No;
 	public Material cam3Yes;
+	#endregion
 
-	//vent
+	#region Vent
 	public List<Vector3> route1;		//Right
 	public List<Vector3> route2;		//Middle
 	public List<Vector3> route3;		//Left
 	public GameObject[] VentSnares;
 	public GameObject VentCharacter1;		//Mangle
 	public GameObject VentCharacter2;		//Withered Chica
+	#endregion
 
-	//duct
+	#region Duct
 	public GameObject[] ductDoorButtons;
 	public GameObject[] corridorButtons;
 	public GameObject ductCharacter1;		//Pigpatch
@@ -87,7 +92,8 @@ public class qkUCNScript : MonoBehaviour {
 	public List<Vector3> corridors;			//Clickable corners
 	private bool rightOpen = false;			//If true then right duct door is open otherwise left
 	private bool stayinplace = false;		//If true the character won't move on the next tick
-	
+	#endregion
+	#endregion
 
 	void Start(){
 		moduleId=moduleIdCounter++;
@@ -292,19 +298,15 @@ public class qkUCNScript : MonoBehaviour {
 
 
 		for(int i = 0;i<12;i++){
-			//Debug.LogFormat(i.ToString());
 			corridorButtons[i].transform.localPosition=new Vector3(corridors[i].x, 0.03276379f, corridors[i].z);
 		}
-		//Debug.LogFormat(getIndex(corridors, testvect).ToString());
 		
 		StartCoroutine(startDucts());
-		StartCoroutine(Checkforstage());
 		NewStage(true);
 		
 	}
 
 	void closeVent(GameObject Snare){
-		//Debug.LogFormat("Got it");
 		VentSnares[0].GetComponent<Renderer>().enabled=false;
 		VentSnares[1].GetComponent<Renderer>().enabled=false;
 		VentSnares[2].GetComponent<Renderer>().enabled=false;
@@ -323,8 +325,7 @@ public class qkUCNScript : MonoBehaviour {
 			ch.transform.localPosition=route[index];
 			yield return new WaitForSeconds(waitTime);
 			if((route==route1 && index==16) || (route==route2 && index==15) || (route==route3 && index==6)){
-				if(!solved){
-				GetComponent<KMBombModule>().HandleStrike();}
+				Strike();
 				index=-1;
 				if(firstchar){
 					int rdm=UnityEngine.Random.Range(1,4);
@@ -407,9 +408,9 @@ public class qkUCNScript : MonoBehaviour {
 						break;
 					}
 					yield break;
+						}
+					}
 				}
-				}
-			}
 				}
 			}
 			index++;
@@ -494,7 +495,7 @@ public class qkUCNScript : MonoBehaviour {
 				int rng = UnityEngine.Random.Range(0, templist.Count);
 				charact.transform.localPosition=templist[rng];
 				if((charact.transform.localPosition==new Vector3(-0.0175f, 0.03576379f, -0.0451f) && !rightOpen && !solved) || (charact.transform.localPosition==new Vector3(0.0166f, 0.03576379f, -0.0478f) && rightOpen && !solved)){
-					GetComponent<KMBombModule>().HandleStrike();
+					Strike();
 					charact.transform.localPosition=startingpos;
 				}
 				else{
@@ -530,10 +531,8 @@ public class qkUCNScript : MonoBehaviour {
 		yield break;
 	}
 
-	IEnumerator Checkforstage(){
-		while(true){
-			yield return new WaitForSeconds(1f);
-			if(TwitchPlaysActive){
+	void Update(){
+		if(TwitchPlaysActive){
 			waitTime=20f;
 			waitTimeDuct=10f;
 		}
@@ -545,21 +544,21 @@ public class qkUCNScript : MonoBehaviour {
 		solvables.RemoveAll(item => item == "Ultimate Custom Night");
 		if(solvables.Count()-Bomb.GetSolvedModuleNames().Count()<=0){
 			solved=true;
-			GetComponent<KMBombModule>().HandlePass();
+			if(!devMode){
+				GetComponent<KMBombModule>().HandlePass();
+			}
 		}
 		if(Bomb.GetSolvedModuleNames().Count()>lastCalcStage){
 			lastCalcStage=Bomb.GetSolvedModuleNames().Count();
 			NewStage(false);
 		}
-		}
-	 }
+	}
+	 
 
 	void NewStage(bool first){
 		if(closedDoor!=currentPlace){
-			if(!solved && !first){
-				GetComponent<KMBombModule>().HandleStrike();
-				currentPlace=UnityEngine.Random.Range(1,4);
-			}
+			Strike();
+			currentPlace=UnityEngine.Random.Range(1,4);
 		}
 		else{
 			currentPlace=UnityEngine.Random.Range(1,4);
@@ -604,14 +603,21 @@ public class qkUCNScript : MonoBehaviour {
 		 GetComponent<KMBombModule>().HandlePass();
 		 yield break;
 	 }
+
+	private void Strike(){
+		if(!solved){
+			GetComponent<KMBombModule>().HandleStrike(); //Strike only if the module is not solved
+		}
+		return;
+	}
 	
 	public string TwitchHelpMessage = "Use '!{0} cycle' to cycle cameras, vent and duct! Use '!{0} cyclecams' to cycle the cameras only! Use '!{0} cameras', '!{0} vent' and '{0} duct' to change the view! Use '!{0} cam1' '!{0} cam2' and '!{0} cam3' to see cameras manualy! Use '!{0} closedoor #' to close a door! For ex. '!{0} closedoor 1' will close the door for cam 1. Use '!{0} snare #' to snare a vent route! 1 = BL; 2 = T; 3 = BR;! Use '!{0} closeright' to close the right duct door and '!{0} closeleft' to close the left duct door! Use '!{0} setlure #' to set the lure to a corner! Corners are numbered from 1 to 12.";
 	IEnumerator ProcessTwitchCommand(string command){
 		yield return null;
 		string commandl = "";
 		int tried = 0;
-		command=command.ToUpper();
-		if(command.Equals("CYCLE")){
+		command=command.ToLowerInvariant();
+		if(command.Equals("cycle")){
 			camButton.OnInteract();
 			camButton1.OnInteract();
 			yield return new WaitForSeconds(1.5f);
@@ -627,7 +633,7 @@ public class qkUCNScript : MonoBehaviour {
 			camButton.OnInteract();
 			yield break;
 		}
-		if(command.Equals("CYCLECAMS")){
+		if(command.Equals("cyclecams")){
 			camButton.OnInteract();
 			camButton1.OnInteract();
 			yield return new WaitForSeconds(1.5f);
@@ -638,8 +644,8 @@ public class qkUCNScript : MonoBehaviour {
 			camButton1.OnInteract();
 			yield break;
 		}
-		if(command.Contains("CLOSEDOOR")){
-			commandl=command.Replace("CLOSEDOOR", "");
+		if(command.Contains("closedoor")){
+			commandl=command.Replace("closedoor", "");
 			if(int.TryParse(commandl, out tried)){
 				tried=int.Parse(commandl);
 				tried=tried-1;
@@ -658,20 +664,20 @@ public class qkUCNScript : MonoBehaviour {
 					yield break;
 				}
 		}
-		if(command.Equals("CAMERAS")){
+		if(command.Equals("cameras")){
 			camButton.OnInteract();
 			yield break;
 		}
-		if(command.Equals("VENT")){
+		if(command.Equals("vent")){
 			ventButton.OnInteract();
 			yield break;
 		}
-		if(command.Equals("DUCT")){
+		if(command.Equals("duct")){
 			ductButton.OnInteract();
 			yield break;
 		}
-		if(command.Contains("SNARE")){
-			commandl=command.Replace("SNARE", "");
+		if(command.Contains("snare")){
+			commandl=command.Replace("snare", "");
 			if(int.TryParse(commandl, out tried)){
 				tried=int.Parse(commandl);
 				tried=tried-1;
@@ -694,8 +700,8 @@ public class qkUCNScript : MonoBehaviour {
 					yield break;
 				}
 		}
-		if(command.Contains("SETLURE")){
-			commandl=command.Replace("SETLURE", "");
+		if(command.Contains("setlure")){
+			commandl=command.Replace("setlure", "");
 			if(int.TryParse(commandl, out tried)){
 				tried=int.Parse(commandl);
 				tried=tried-1;
@@ -714,27 +720,27 @@ public class qkUCNScript : MonoBehaviour {
 					yield break;
 				}
 		}
-		if(command.Equals("CLOSERIGHT")){
+		if(command.Equals("closeright")){
 			ductButton.OnInteract();
 			ductDoorButtons[1].GetComponent<KMSelectable>().OnInteract();
 			yield break;
 		}
-		if(command.Equals("CLOSELEFT")){
+		if(command.Equals("closeleft")){
 			ductButton.OnInteract();
 			ductDoorButtons[0].GetComponent<KMSelectable>().OnInteract();
 			yield break;
 		}
-		if(command.Equals("CAM1")){
+		if(command.Equals("cam1")){
 			camButton.OnInteract();
 			camButton1.OnInteract();
 			yield break;
 		}
-		if(command.Equals("CAM2")){
+		if(command.Equals("cam2")){
 			camButton.OnInteract();
 			camButton2.OnInteract();
 			yield break;
 		}
-		if(command.Equals("CAM3")){
+		if(command.Equals("cam3")){
 			camButton.OnInteract();
 			camButton3.OnInteract();
 			yield break;
