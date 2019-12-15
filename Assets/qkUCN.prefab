@@ -280,6 +280,7 @@ GameObject:
   - component: {fileID: 114931395533815726}
   - component: {fileID: 114815936598615770}
   - component: {fileID: 114254720517048516}
+  - component: {fileID: 114932521603586994}
   m_Layer: 0
   m_Name: qkUCN
   m_TagString: Untagged
@@ -5932,8 +5933,7 @@ MonoBehaviour:
   generalCam: {fileID: 1022538163752650}
   generalVent: {fileID: 1920319228961316}
   generalDuct: {fileID: 1827572652982440}
-  Ignoreds:
-  - Ultimate Custom Night
+  ignoredModules: []
   Bomb: {fileID: 114223508013866464}
   screen: {fileID: 1037301869101782}
   notSelected: {fileID: 2100000, guid: fba9f8d69158f4fdb82c45f1b7e4fc24, type: 2}
@@ -6256,6 +6256,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighlightScale: {x: 0, y: 0, z: 0}
   OutlineAmount: 0
+--- !u!114 &114932521603586994
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1121592367213532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96a2fc4ae3e690a498a0d85a2b5e0b99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114935506584219816
 MonoBehaviour:
   m_ObjectHideFlags: 1

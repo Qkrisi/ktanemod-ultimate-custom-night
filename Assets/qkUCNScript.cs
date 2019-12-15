@@ -21,7 +21,7 @@ public class qkUCNScript : MonoBehaviour {
 	public GameObject generalCam;
 	public GameObject generalVent;
 	public GameObject generalDuct;
-	public string[] Ignoreds;
+	public string[] ignoredModules;
 	public KMBombInfo Bomb;
 	int ticker = 0;
 	int solveCount = 0;
@@ -35,7 +35,7 @@ public class qkUCNScript : MonoBehaviour {
 	private List<string> solvables;
 	private float waitTime = 20f;
 	private float waitTimeDuct = 10f;
-	private readonly bool devMode = false;
+	private readonly bool devMode = true;
 	#endregion
 	
 	#region Cams
@@ -301,6 +301,10 @@ public class qkUCNScript : MonoBehaviour {
 			corridorButtons[i].transform.localPosition=new Vector3(corridors[i].x, 0.03276379f, corridors[i].z);
 		}
 		
+		ignoredModules = GetComponent<KMBossModule>().GetIgnoredModules("Ultimate Custom Night", new string[]{
+				"Ultimate Custom Night"
+            });
+
 		StartCoroutine(startDucts());
 		NewStage(true);
 		
@@ -543,8 +547,8 @@ public class qkUCNScript : MonoBehaviour {
 		solvables=Bomb.GetSolvableModuleNames();
 		solvables.RemoveAll(item => item == "Ultimate Custom Night");
 		if(solvables.Count()-Bomb.GetSolvedModuleNames().Count()<=0){
-			solved=true;
-			if(!devMode){
+			if(!devMode && !solved){
+				solved=true;
 				GetComponent<KMBombModule>().HandlePass();
 			}
 		}
@@ -590,7 +594,7 @@ public class qkUCNScript : MonoBehaviour {
 	}
 
 	void CheckAutoSolve(){
-		stages = Bomb.GetSolvableModuleNames().Where(x => !Ignoreds.Contains(x)).Count();
+		stages = Bomb.GetSolvableModuleNames().Where(x => !ignoredModules.Contains(x)).Count();
 		if(stages==0){
 			solved=true;
 			StartCoroutine(AutoSolve());

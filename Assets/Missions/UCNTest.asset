@@ -26,9 +26,10 @@ MonoBehaviour:
       SpecialComponentType: 0
       ModTypes:
       - qkUCN
-    - Count: 5
+    - Count: 10
       AllowedSources: 2
-      ComponentTypes: 02000000
+      ComponentTypes: 
       SpecialComponentType: 0
-      ModTypes: []
+      ModTypes:
+      - bossModuleTestModule
   PacingEventsEnabled: 0
