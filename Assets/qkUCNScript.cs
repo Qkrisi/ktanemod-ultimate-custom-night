@@ -302,7 +302,8 @@ public class qkUCNScript : MonoBehaviour {
 		}
 		
 		ignoredModules = GetComponent<KMBossModule>().GetIgnoredModules("Ultimate Custom Night", new string[]{
-				"Ultimate Custom Night"
+				"Ultimate Custom Night",
+				"The Time Keeper"
             });
 
 		StartCoroutine(startDucts());
@@ -478,8 +479,8 @@ public class qkUCNScript : MonoBehaviour {
 					break;
 			}
 			if(charact.transform.localPosition==new Vector3(audioLure.transform.localPosition.x, 0.03576379f, audioLure.transform.localPosition.z)){
-				int rnd = UnityEngine.Random.Range(0,2);
-				if(rnd==1){
+				int rnd = UnityEngine.Random.Range(1,100);
+				if(rnd<=40){
 					stayinplace=true;
 				}
 				else{
@@ -616,13 +617,13 @@ public class qkUCNScript : MonoBehaviour {
 		return;
 	}
 	
-	public string TwitchHelpMessage = "Use '!{0} cycle' to cycle cameras, vent and duct! Use '!{0} cyclecams' to cycle the cameras only! Use '!{0} cameras', '!{0} vent' and '{0} duct' to change the view! Use '!{0} cam1' '!{0} cam2' and '!{0} cam3' to see cameras manualy! Use '!{0} closedoor #' to close a door! For ex. '!{0} closedoor 1' will close the door for cam 1. Use '!{0} snare #' to snare a vent route! 1 = BL; 2 = T; 3 = BR;! Use '!{0} closeright' to close the right duct door and '!{0} closeleft' to close the left duct door! Use '!{0} setlure #' to set the lure to a corner! Corners are numbered from 1 to 12.";
+	public string TwitchHelpMessage = "Use '!{0} cycle' to cycle cameras, vent and duct! Use '!{0} cyclecams' to cycle the cameras only! Use '!{0} cameras', '!{0} vent' and '{0} duct' to change the view! Use '!{0} cam1' '!{0} cam2' and '!{0} cam3' to see cameras manualy! Use '!{0} closedoor #' to close a door! For ex. '!{0} closedoor 1' will close the door for cam 1. Use '!{0} snare #' to snare a vent route! 1 = BL; 2 = T; 3 = BR;! Use '!{0} openright' to open the right duct door and '!{0} openleft' to open the left duct door! Use '!{0} setlure #' to set the lure to a corner! Corners are numbered from 1 to 12.";
 	IEnumerator ProcessTwitchCommand(string command){
-		yield return null;
 		string commandl = "";
 		int tried = 0;
 		command=command.ToLowerInvariant();
 		if(command.Equals("cycle")){
+			yield return null;
 			camButton.OnInteract();
 			camButton1.OnInteract();
 			yield return new WaitForSeconds(1.5f);
@@ -639,6 +640,7 @@ public class qkUCNScript : MonoBehaviour {
 			yield break;
 		}
 		if(command.Equals("cyclecams")){
+			yield return null;
 			camButton.OnInteract();
 			camButton1.OnInteract();
 			yield return new WaitForSeconds(1.5f);
@@ -655,6 +657,7 @@ public class qkUCNScript : MonoBehaviour {
 				tried=int.Parse(commandl);
 				tried=tried-1;
 				if(tried>=0 && tried<=2){
+					yield return null;
 					camButton.OnInteract();
 					doorButtons[tried].GetComponent<KMSelectable>().OnInteract();
 					yield break;
@@ -670,14 +673,17 @@ public class qkUCNScript : MonoBehaviour {
 				}
 		}
 		if(command.Equals("cameras")){
+			yield return null;
 			camButton.OnInteract();
 			yield break;
 		}
 		if(command.Equals("vent")){
+			yield return null;
 			ventButton.OnInteract();
 			yield break;
 		}
 		if(command.Equals("duct")){
+			yield return null;
 			ductButton.OnInteract();
 			yield break;
 		}
@@ -691,6 +697,7 @@ public class qkUCNScript : MonoBehaviour {
 					if(tried==0){tried=2;
 					changed=true;};
 					if(tried==2 && !changed){tried=0;};
+					yield return null;
 					ventButton.OnInteract();
 					VentSnares[tried].GetComponent<KMSelectable>().OnInteract();
 					yield break;
@@ -711,6 +718,7 @@ public class qkUCNScript : MonoBehaviour {
 				tried=int.Parse(commandl);
 				tried=tried-1;
 				if(tried>=0 && tried<=11){
+					yield return null;
 					ductButton.OnInteract();
 					corridorButtons[tried].GetComponent<KMSelectable>().OnInteract();
 					yield break;
@@ -725,27 +733,32 @@ public class qkUCNScript : MonoBehaviour {
 					yield break;
 				}
 		}
-		if(command.Equals("closeright")){
+		if(command.Equals("openright")){
+			yield return null;
 			ductButton.OnInteract();
 			ductDoorButtons[1].GetComponent<KMSelectable>().OnInteract();
 			yield break;
 		}
-		if(command.Equals("closeleft")){
+		if(command.Equals("openleft")){
+			yield return null;
 			ductButton.OnInteract();
 			ductDoorButtons[0].GetComponent<KMSelectable>().OnInteract();
 			yield break;
 		}
 		if(command.Equals("cam1")){
+			yield return null;
 			camButton.OnInteract();
 			camButton1.OnInteract();
 			yield break;
 		}
 		if(command.Equals("cam2")){
+			yield return null;
 			camButton.OnInteract();
 			camButton2.OnInteract();
 			yield break;
 		}
 		if(command.Equals("cam3")){
+			yield return null;
 			camButton.OnInteract();
 			camButton3.OnInteract();
 			yield break;

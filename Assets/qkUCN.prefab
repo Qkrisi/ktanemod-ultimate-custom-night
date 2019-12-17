@@ -4673,7 +4673,8 @@ MonoBehaviour:
   m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShaderNames: []
+  ShaderNames:
+  - Standard
 --- !u!114 &114398845177732388
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5252,7 +5253,8 @@ MonoBehaviour:
   m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShaderNames: []
+  ShaderNames:
+  - Standard
 --- !u!114 &114780153022942820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5347,7 +5349,8 @@ MonoBehaviour:
   m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShaderNames: []
+  ShaderNames:
+  - Standard
 --- !u!114 &114800183441140484
 MonoBehaviour:
   m_ObjectHideFlags: 1
