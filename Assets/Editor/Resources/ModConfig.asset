@@ -14,7 +14,20 @@ MonoBehaviour:
   id: qkUCN
   title: Ultimate Custom Night
   author: Qkrisi
-  description: Ultimate Custom Night
-  version: 0.5
+  description: 'A module based non the latest FNaF game called Ultimate Custom Night
+    by Qkrisi
+
+
+    Big thanks to eXish for the camera pictures!
+
+
+    TP supported
+
+
+    Temporarly manual page: https://docs.google.com/document/d/1I-mUGGav4cqHKpVcTpaGQ45hzuonsH6VpmcQfFX1BXo/edit?usp=sharing
+
+
+    moduleID: qkUCN'
+  version: 1.0
   outputFolder: build
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: 54ec901bc93b0471b8de4368267b369a, type: 3}

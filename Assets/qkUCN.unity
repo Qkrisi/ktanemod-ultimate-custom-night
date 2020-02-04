@@ -120,11 +120,6 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 114815936598615770, guid: 93b9ce0fa882f4a4692c2bbf6e19009e,
-        type: 2}
-      propertyPath: Ignoreds.Array.size
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4665726870894232, guid: 93b9ce0fa882f4a4692c2bbf6e19009e, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0.0279
@@ -156,11 +151,6 @@ Prefab:
     - target: {fileID: 4665726870894232, guid: 93b9ce0fa882f4a4692c2bbf6e19009e, type: 2}
       propertyPath: m_RootOrder
       value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114815936598615770, guid: 93b9ce0fa882f4a4692c2bbf6e19009e,
-        type: 2}
-      propertyPath: Ignoreds.Array.data[0]
-      value: Ultimate Custom Night
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 93b9ce0fa882f4a4692c2bbf6e19009e, type: 2}
@@ -272,22 +262,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8814ea52310d2614a9feda02ec355ae4, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1673384556 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1121592367213532, guid: 93b9ce0fa882f4a4692c2bbf6e19009e,
-    type: 2}
-  m_PrefabInternal: {fileID: 567948214}
---- !u!114 &1673384565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1673384556}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96a2fc4ae3e690a498a0d85a2b5e0b99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1967639712
 GameObject:
   m_ObjectHideFlags: 0
