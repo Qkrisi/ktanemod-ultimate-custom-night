@@ -604,7 +604,7 @@ public class qkUCNScript : MonoBehaviour {
 
 	private IEnumerator AutoSolve(){
 		 yield return new WaitForSeconds(2f);
-		 Debug.LogFormat("[Ultimate Custom Night #{0}] There are no modules that are not ignored by Ultimate Custoom Night. Auto-solving module...", moduleId);
+		 Debug.LogFormat("[Ultimate Custom Night #{0}] There are no modules left that are not ignored by Ultimate Custom Night. Auto-solving module.", moduleId);
 		 GetComponent<KMBombModule>().HandlePass();
 		 yield break;
 	 }
@@ -617,7 +617,18 @@ public class qkUCNScript : MonoBehaviour {
 		return;
 	}
 	
+	#pragma warning disable 414
 	public string TwitchHelpMessage = "Use '!{0} cycle' to cycle cameras, vent and duct! Use '!{0} cyclecams' to cycle the cameras only! Use '!{0} cameras', '!{0} vent' and '{0} duct' to change the view! Use '!{0} cam1' '!{0} cam2' and '!{0} cam3' to see cameras manualy! Use '!{0} closedoor #' to close a door! For ex. '!{0} closedoor 1' will close the door for cam 1. Use '!{0} snare #' to snare a vent route! 1 = BL; 2 = T; 3 = BR;! Use '!{0} openright' to open the right duct door and '!{0} openleft' to open the left duct door! Use '!{0} setlure #' to set the lure to a corner! Corners are numbered from 1 to 12.";
+	#pragma warning restore 414
+	
+	void TwitchHandleForcedSolve()
+	{
+		StopAllCoroutines();
+		solved = true;
+		Debug.LogFormat("[Ultimate Custom Night #{0}] Auto-solving module due to TP command requesting a force solve.", moduleId);
+		GetComponent<KMBombModule>().HandlePass();
+	}
+	
 	IEnumerator ProcessTwitchCommand(string command){
 		string commandl = "";
 		int tried = 0;
