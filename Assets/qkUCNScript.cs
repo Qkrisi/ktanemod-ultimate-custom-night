@@ -479,7 +479,7 @@ public class qkUCNScript : MonoBehaviour {
 					break;
 			}
 			if(charact.transform.localPosition==new Vector3(audioLure.transform.localPosition.x, 0.03576379f, audioLure.transform.localPosition.z)){
-				int rnd = UnityEngine.Random.Range(1,100);
+				int rnd = UnityEngine.Random.Range(1,101);
 				if(rnd<=40){
 					stayinplace=true;
 				}
