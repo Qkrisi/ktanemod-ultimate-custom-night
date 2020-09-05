@@ -1,45 +1,188 @@
-﻿using System.Collections;
+﻿using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using KModkit;
 using System.Linq;
 
-public class qkUCNScript : MonoBehaviour {
-	#region Variables
-	#region General
-	public KMAudio Audio;
-	public Vector3 testvect;
-	public bool solved = false;
-	public Vector3 cambuttonPosition;
-	public Vector3 ventbuttonPosition;
-	public Vector3 ductbuttonPosition;
-	public KMSelectable camButton;
-	public KMSelectable ventButton;
-	public KMSelectable ductButton;
-	public GameObject currentMark;
-	public GameObject generalCam;
-	public GameObject generalVent;
-	public GameObject generalDuct;
-	public string[] ignoredModules;
-	public KMBombInfo Bomb;
-	int ticker = 0;
-	int solveCount = 0;
-	int lastCalcStage=0;
-	List<String> solvedModules = new List<String>();
-	private int stages;
-	private int stageNumber = 0;
-	bool TwitchPlaysActive;
-	static int moduleIdCounter;
-	int moduleId;
-	private int solvables;
-	private float waitTime = 20f;
-	private float waitTimeDuct = 10f;
-	private readonly bool devMode = false;
-	#endregion
-	
-	#region Cams
-	public GameObject screen;
+public partial class qkUCNScript : MonoBehaviour {
+    #region Variables
+    #region General
+    public KMAudio Audio;
+    public bool solved = false;
+    public Vector3 cambuttonPosition;
+    public Vector3 ventbuttonPosition;
+    public Vector3 ductbuttonPosition;
+    public Vector3 perksbuttonPosition;
+    public KMSelectable camButton;
+    public KMSelectable ventButton;
+    public KMSelectable ductButton;
+    public KMSelectable perksButton;
+    public GameObject currentMark;
+    public GameObject generalCam;
+    public GameObject generalVent;
+    public GameObject generalDuct;
+    public GameObject generalPerks;
+    public string[] ignoredModules;
+    public KMBombInfo Bomb;
+    int ticker = 0;
+    int solveCount = 0;
+    int lastCalcStage = 0;
+    List<String> solvedModules = new List<String>();
+    private int stages;
+    private int stageNumber = 0;
+    bool TwitchPlaysActive;
+    bool ZenModeActive;
+    static int moduleIdCounter;
+    int moduleId;
+    private int solvables;
+    private float waitTime = 20f;
+    private float waitTimeDuct = 10f;
+    private readonly bool devMode = false;
+    private readonly BindingFlags MainFlags = BindingFlags.Public | BindingFlags.Instance;
+    private bool _VisibilityOverride = false;
+    private bool VisibilityOverride
+    {
+        get
+        {
+            return _VisibilityOverride;
+        }
+        set
+        {
+            foreach (string _name in new string[] { "PowerManagement", "Music" }) transform.Find(_name).localScale = value ? new Vector3(1, 1, 1) : new Vector3(0, 0, 0);
+            _VisibilityOverride = value;
+        }
+    }
+    private readonly Dictionary<string, string[]> HelpCommands = new Dictionary<string, string[]>()
+    {
+        {
+            "help all",
+            new string[]
+            {
+                "General help: Use '!{0} cycle' to cycle cameras, vent and duct and '!{0} [cameras/vent/duct]' to set the screen to a specific place!",
+                "Office input help: Use '!{0} toggledoor [front/side]' to toggle the front or side vent door!",
+                "Camera help: Use '!{0} cyclecams' to cycle all cameras, '!{0} [cam1/cam2/cam3]' to view a specific camera, '!{0} closedoor #' to close the door of the corresponding camera!",
+                "Vent help: Use '!{0} snare #' to snare a route! 1 = BL; 2 = T; 3 = BR",
+                "Duct help: Use '!{0} open[right/left]' to open the specified duct door and '!{0} setlure #' to set the audio lure to the specified corner (1-12)!",
+                "Perks help: Use '!{0} perk [perk name or index]' to turn on a perk. [perk name] can be 'global music box' (or 'gmb' for short) or 'off'; indexes are numbered 1-2 from top to bottom.",
+                "Music help: Use '!{0} changemusic' to change the music!"
+            }
+        },
+        {
+            "help general",
+            new string[]
+            {
+                "General help: Use '!{0} cycle' to cycle cameras, vent and duct and '!{0} [cameras/vent/duct]' to set the screen to a specific place!"
+            }
+        },
+        {
+            "help office",
+            new string[]
+            {
+                "Office input help: Use '!{0} toggledoor [front/side]' to toggle the front or side vent door!"
+            }
+        },
+        {
+            "help camera",
+            new string[]
+            {
+                "Camera help: Use '!{0} cyclecams' to cycle all cameras, '!{0} [cam1/cam2/cam3]' to view a specific camera, '!{0} closedoor #' to close the door of the corresponding camera!"
+            }
+        },
+        {
+            "help vent",
+            new string[]
+            {
+                "Vent help: Use '!{0} snare #' to snare a route! 1 = BL; 2 = T; 3 = BR"
+            }
+        },
+        {
+            "help duct",
+            new string[]
+            {
+                "Duct help: Use '!{0} open[right/left]' to open the specified duct door and '!{0} setlure #' to set the audio lure to the specified corner (1-12)!"
+            }
+        },
+        {
+            "help perks",
+            new string[]
+            {
+                "Perks help: Use '!{0} perk [perk name or index]' to turn on a perk. [perk name] can be 'global music box' (or 'gmb' for short) or 'off'; indexes are numbered 1-2 from top to bottom."
+            }
+        },
+        {
+            "help music",
+            new string[]
+            {
+                "Music help: Use '!{0} changemusic' to change the music!"
+            }
+        }
+    };
+    #endregion
+
+    #region Doors
+    private bool RightVentClosed = false;
+    private bool FrontVentClosed = false;
+    private bool LeftDoorClosed = false;
+    private bool RightDoorClosed = false;
+    #endregion
+
+    #region PowerManagement
+    public TextMesh PowerText;
+    public GameObject UsageBar;
+    public Material WhiteMaterial;
+    public Material OrangeMaterial;
+    private const int MinUsage = 0;
+    private const int MaxUsage = 5;
+    private readonly float?[] UsageTimes = new float?[]
+    {
+        null,
+        5,
+        4,
+        3,
+        2,
+        1
+    };
+    private int _CurrentUsage = 0;
+    private int CurrentUsage
+    {
+        get
+        {
+            return _CurrentUsage;
+        }
+        set
+        {
+            if (value <= MaxUsage && value >= MinUsage)
+            {
+                _CurrentUsage = value;
+                SetUsage(CurrentUsage);
+            }
+        }
+    }
+    private float? WaitTime
+    {
+        get
+        {
+            return UsageTimes[CurrentUsage];
+        }
+    }
+    private int _CurrentPower = 100;
+    private int CurrentPower
+    {
+        get
+        {
+            return _CurrentPower;
+        }
+        set
+        {
+            _CurrentPower = value;
+            PowerText.text = String.Format("Power: {0}%", CurrentPower);
+        }
+    }
+    #endregion
+
+    #region Cams
+    public GameObject screen;
 	public Material notSelected;
 	public Material selected;
 	public Material doorOpen;
@@ -67,10 +210,11 @@ public class qkUCNScript : MonoBehaviour {
 	public GameObject[] VentSnares;
 	public GameObject VentCharacter1;		//Mangle
 	public GameObject VentCharacter2;		//Withered Chica
-	#endregion
+    private List<bool> _go = new List<bool>() { true, true };
+    #endregion
 
-	#region Duct
-	public GameObject[] ductDoorButtons;
+    #region Duct
+    public GameObject[] ductDoorButtons;
 	public GameObject[] corridorButtons;
 	public GameObject ductCharacter1;		//Pigpatch
 	public GameObject ductCharacter2;		//Mr. Hippo
@@ -91,24 +235,32 @@ public class qkUCNScript : MonoBehaviour {
 	public List<Vector3> adj12;
 	public List<Vector3> corridors;			//Clickable corners
 	private bool rightOpen = false;			//If true then right duct door is open otherwise left
-	private bool stayinplace = false;		//If true the character won't move on the next tick
-	#endregion
-	#endregion
+	private bool stayinplace = false;       //If true the character won't move on the next tick
+    #endregion
 
-	void Start(){
-		moduleId=moduleIdCounter++;
-		int rdm=UnityEngine.Random.Range(1,4);
-		switch(rdm){
-			case 1:
-				StartCoroutine(MoveCharacter(VentCharacter1, route1, true, true));
-				break;
-			case 2:
-				StartCoroutine(MoveCharacter(VentCharacter1, route2, true, true));
-				break;
-			case 3:
-				StartCoroutine(MoveCharacter(VentCharacter1, route3, true, true));
-				break;
-		}
+    #region Perks
+    public Vector3 GlobalMusicBoxPosition;
+    public Vector3 OffPosition;
+    public GameObject PerkMarker;
+    public KMSelectable GlobalMusicBoxButton;
+    public KMSelectable OffButton;
+    private bool globalMusicBox = false;
+    private bool perksOff = true;
+    #endregion
+
+    #region Music
+    public KMSelectable ChangeMusicButton;
+    #endregion
+    #endregion
+
+    private bool canGo(int index)
+    {
+        if (!_go[0] && !_go[1]) _go[index == 0 ? 1 : 0] = true;
+        return index == 0 ? _go[1] : _go[0];
+    }
+
+    void Start(){
+		moduleId=++moduleIdCounter;
 		
 		camButton1.OnInteract += delegate(){
 			Audio.PlaySoundAtTransform("Click", camButton1.transform);
@@ -275,7 +427,9 @@ public class qkUCNScript : MonoBehaviour {
 			generalCam.transform.localScale=new Vector3(1f,1f,1f);
 			generalVent.transform.localScale=new Vector3(0f,0f,0f);
 			generalDuct.transform.localScale=new Vector3(0f,0f,0f);
+            generalPerks.transform.localScale = new Vector3(0f, 0f, 0f);
 			currentMark.transform.localPosition=cambuttonPosition;
+            VisibilityOverride = true;
 			return false;
 		};
 		ventButton.OnInteract += delegate(){
@@ -283,7 +437,9 @@ public class qkUCNScript : MonoBehaviour {
 			generalCam.transform.localScale=new Vector3(0f,0f,0f);
 			generalVent.transform.localScale=new Vector3(1f,1f,1f);
 			generalDuct.transform.localScale=new Vector3(0f,0f,0f);
+            generalPerks.transform.localScale = new Vector3(0f, 0f, 0f);
 			currentMark.transform.localPosition=ventbuttonPosition;
+            VisibilityOverride = true;
 			return false;
 		};
 		ductButton.OnInteract += delegate(){
@@ -291,13 +447,37 @@ public class qkUCNScript : MonoBehaviour {
 			generalCam.transform.localScale=new Vector3(0f,0f,0f);
 			generalVent.transform.localScale=new Vector3(0f,0f,0f);
 			generalDuct.transform.localScale=new Vector3(1f,1f,1f);
+            generalPerks.transform.localScale = new Vector3(0f, 0f, 0f);
 			currentMark.transform.localPosition=ductbuttonPosition;
+            VisibilityOverride = false;
 			return false;
 		};
+        perksButton.OnInteract += delegate (){
+            Audio.PlaySoundAtTransform("Click", perksButton.transform);
+            generalCam.transform.localScale = new Vector3(0f, 0f, 0f);
+            generalVent.transform.localScale = new Vector3(0f, 0f, 0f);
+            generalDuct.transform.localScale = new Vector3(0f, 0f, 0f);
+            generalPerks.transform.localScale = new Vector3(1f, 1f, 1f);
+            currentMark.transform.localPosition = perksbuttonPosition;
+            VisibilityOverride = true;
+            return false;
+        };
 
+        GlobalMusicBoxButton.OnInteract += () => TogglePerks(ref globalMusicBox, GlobalMusicBoxPosition);
+        OffButton.OnInteract += () => TogglePerks(ref perksOff, OffPosition, -1);
 
+        ChangeMusicButton.OnInteract += delegate() {
+            if (!ChicaAttack) Strike("Chica");
+            else
+            {
+                ChicaAttack = false;
+                StopCoroutine(WaitForChicaPress());
+                StartCoroutine(HandleChica());
+            }
+            return false;
+        };
 
-		for(int i = 0;i<12;i++){
+        for (int i = 0;i<12;i++){
 			corridorButtons[i].transform.localPosition=new Vector3(corridors[i].x, 0.03276379f, corridors[i].z);
 		}
 		
@@ -306,32 +486,103 @@ public class qkUCNScript : MonoBehaviour {
 				"The Time Keeper"
             });
 
+        StartCoroutine(startVent());
 		StartCoroutine(startDucts());
-		NewStage(true);
-		
+        StartCoroutine(HandleAfton());
+        StartCoroutine(HandleChica());
+        StartCoroutine(HandleInputs());
+        StartCoroutine(HandlePower());
+		NewStage(true);	
 	}
 
-	void closeVent(GameObject Snare){
+    private bool TogglePerks(ref bool NewPerk, Vector3 NewPosition, int increment = 1)
+    {
+        Audio.PlaySoundAtTransform("Click", transform);
+        if (!NewPerk)
+        {
+            globalMusicBox = false;
+            perksOff = false;
+            NewPerk = true;
+            PerkMarker.transform.localPosition = NewPosition;
+            CurrentUsage += increment;
+        }
+        return false;
+    }
+
+    private void SetUsage(int state)
+    {
+        var currentScale = UsageBar.transform.localScale;
+        currentScale.x = (float)state / 100;
+        UsageBar.transform.localScale = currentScale;
+        var currentPosition = UsageBar.transform.localPosition;
+        currentPosition.x = 0.0138f + (state * 0.005f);
+        UsageBar.transform.localPosition = currentPosition;
+        UsageBar.GetComponent<Renderer>().material = state >= 4 ? OrangeMaterial : WhiteMaterial;
+    }
+
+    void closeVent(GameObject Snare){
 		VentSnares[0].GetComponent<Renderer>().enabled=false;
 		VentSnares[1].GetComponent<Renderer>().enabled=false;
 		VentSnares[2].GetComponent<Renderer>().enabled=false;
 		Snare.GetComponent<Renderer>().enabled=true;
 	}
 
-	IEnumerator MoveCharacter(GameObject ch, List<Vector3> route, bool firstchar, bool fullfirstchar){
+    private IEnumerator HandleInputs()
+    {
+        while(true)
+        {
+            yield return null;
+            if (Input.GetKeyDown(KeyCode.F)) ToggleDoor(ref RightVentClosed);
+            if (Input.GetKeyDown(KeyCode.W)) ToggleDoor(ref FrontVentClosed);
+            /*if (Input.GetKeyDown(KeyCode.A)) ToggleDoor(ref LeftDoorClosed);
+            if (Input.GetKeyDown(KeyCode.D)) ToggleDoor(ref RightDoorClosed);*/
+        }
+    }
+
+    private void ToggleDoor(ref bool door)
+    {
+        Audio.PlaySoundAtTransform("Door", transform);
+        door = !door;
+        CurrentUsage += door ? 1 : -1;
+    }
+
+    IEnumerator startVent()
+    {
+        yield return new WaitForSeconds(30f);
+        int rdm = UnityEngine.Random.Range(1, 4);
+        switch (rdm)
+        {
+            case 1:
+                StartCoroutine(MoveCharacter(VentCharacter1, route1, true, true));
+                break;
+            case 2:
+                StartCoroutine(MoveCharacter(VentCharacter1, route2, true, true));
+                break;
+            case 3:
+                StartCoroutine(MoveCharacter(VentCharacter1, route3, true, true));
+                break;
+        }
+    }
+
+    IEnumerator MoveCharacter(GameObject ch, List<Vector3> route, bool firstchar, bool fullfirstchar){
 		if(!firstchar){
 			yield return new WaitForSeconds(.5f);
 		}
 		
 		int index=0;
 		int newcharindex = 0;
+        int setIndex = firstchar ? 0 : 1;
+        StartCoroutine(HandleFlash(setIndex));
 		while(true){
 			yield return null;
+            yield return new WaitUntil(() => canGo(setIndex));
 			ch.transform.localPosition=route[index];
 			yield return new WaitForSeconds(waitTime);
 			if((route==route1 && index==16) || (route==route2 && index==15) || (route==route3 && index==6)){
-				Strike("Vent");
-				index=-1;
+                if (!FrontVentClosed) Strike("Vent");
+                else { Audio.PlaySoundAtTransform("Bang", transform); }
+                _go[setIndex] = true;
+                index =-1;
 				if(firstchar){
 					int rdm=UnityEngine.Random.Range(1,4);
 					switch(rdm){
@@ -349,32 +600,11 @@ public class qkUCNScript : MonoBehaviour {
 				}
 			}
 			if(route==route1){
-			if(index==14 || index==15){
+			if(index==13 || index==14 || index==15){
+                    _go[setIndex] = false;
 				if((route==route1 && VentSnares[0].GetComponent<Renderer>().enabled) || (route==route2 && VentSnares[1].GetComponent<Renderer>().enabled) || (route==route3 && VentSnares[2].GetComponent<Renderer>().enabled)){
 					Audio.PlaySoundAtTransform("Bang", ch.transform);
-					index=-1;
-					if(firstchar){
-					int rdm=UnityEngine.Random.Range(1,4);
-					switch(rdm){
-					case 1:
-						StartCoroutine(MoveCharacter(VentCharacter1, route1, true, false));
-						break;
-					case 2:
-						StartCoroutine(MoveCharacter(VentCharacter1, route2, true, false));
-						break;
-					case 3:
-						StartCoroutine(MoveCharacter(VentCharacter1, route3, true, false));
-						break;
-					}
-					yield break;
-				}
-				}
-			}}
-			else{
-				if(route==route2){
-					if(index==11 || index==12){
-				if((route==route1 && VentSnares[0].GetComponent<Renderer>().enabled) || (route==route2 && VentSnares[1].GetComponent<Renderer>().enabled) || (route==route3 && VentSnares[2].GetComponent<Renderer>().enabled)){
-					Audio.PlaySoundAtTransform("Bang", ch.transform);
+                        _go[setIndex] = true;
 					index=-1;
 					if(firstchar){
 					int rdm=UnityEngine.Random.Range(1,4);
@@ -393,11 +623,41 @@ public class qkUCNScript : MonoBehaviour {
 				}
 				}
 			}
+                if (index > 14) _go[setIndex] = true;
+            }
+			else{
+				if(route==route2){
+					if(index==11 || index==12 || index==13){
+                        _go[setIndex] = false;
+				if((route==route1 && VentSnares[0].GetComponent<Renderer>().enabled) || (route==route2 && VentSnares[1].GetComponent<Renderer>().enabled) || (route==route3 && VentSnares[2].GetComponent<Renderer>().enabled)){
+					Audio.PlaySoundAtTransform("Bang", ch.transform);
+                            _go[setIndex] = true;
+					index=-1;
+					if(firstchar){
+					int rdm=UnityEngine.Random.Range(1,4);
+					switch(rdm){
+					case 1:
+						StartCoroutine(MoveCharacter(VentCharacter1, route1, true, false));
+						break;
+					case 2:
+						StartCoroutine(MoveCharacter(VentCharacter1, route2, true, false));
+						break;
+					case 3:
+						StartCoroutine(MoveCharacter(VentCharacter1, route3, true, false));
+						break;
+					}
+					yield break;
+				}
+				}
+                        if (index > 13) _go[setIndex] = true;
+			}
 				}
 				else{
 					if(index==4 || index==5){
+                        _go[setIndex] = false;
 						if((route==route1 && VentSnares[0].GetComponent<Renderer>().enabled) || (route==route2 && VentSnares[1].GetComponent<Renderer>().enabled) || (route==route3 && VentSnares[2].GetComponent<Renderer>().enabled)){
 							Audio.PlaySoundAtTransform("Bang", ch.transform);
+                            _go[setIndex] = true;
 							index=-1;
 							if(firstchar){
 					int rdm=UnityEngine.Random.Range(1,4);
@@ -416,6 +676,7 @@ public class qkUCNScript : MonoBehaviour {
 						}
 					}
 				}
+                    _go[setIndex] = true;
 				}
 			}
 			index++;
@@ -427,7 +688,26 @@ public class qkUCNScript : MonoBehaviour {
 		yield break;
 	}
 
-	void setLure(GameObject button){
+    private IEnumerator HandleFlash(int setIndex)
+    {
+        GameObject Character = setIndex == 0 ? VentCharacter1 : VentCharacter2;
+        while (!solved)
+        {
+            yield return null;
+            if (!canGo(setIndex))
+            {
+                Character.GetComponent<Renderer>().enabled = false;
+                yield return new WaitForSeconds(.5f);
+                Character.GetComponent<Renderer>().enabled = true;
+                yield return new WaitForSeconds(.5f);
+                continue;
+            }
+            Character.GetComponent<Renderer>().enabled = true;
+
+        }
+    }
+
+    void setLure(GameObject button){
 		Audio.PlaySoundAtTransform("Click", button.transform);
 		audioLure.transform.localPosition = new Vector3(button.transform.localPosition.x, 0.03576379f, button.transform.localPosition.z);
 		audioLure.GetComponent<Renderer>().enabled=true;
@@ -439,43 +719,42 @@ public class qkUCNScript : MonoBehaviour {
 		while(true){
 			yield return null;
 			yield return new WaitForSeconds(waitTimeDuct);
-			Debug.LogFormat(getIndex(corridors, charact.transform.localPosition).ToString());
 			switch(getIndex(corridors, charact.transform.localPosition)){
 				case 0:
-					templist=adj1;
+					templist=adj1.ToList();
 					break;
 				case 1:
-					templist=adj2;
+					templist=adj2.ToList();
 					break;
 				case 2:
-					templist=adj3;
+					templist=adj3.ToList();
 					break;
 				case 3:
-					templist=adj4;
+					templist=adj4.ToList();
 					break;
 				case 4:
-					templist=adj5;
+					templist=adj5.ToList();
 					break;
 				case 5:
-					templist=adj6;
+					templist=adj6.ToList();
 					break;
 				case 6:
-					templist=adj7;
+					templist=adj7.ToList();
 					break;
 				case 7:
-					templist=adj8;
+					templist=adj8.ToList();
 					break;
 				case 8:
-					templist=adj9;
+					templist=adj9.ToList();
 					break;
 				case 9:
-					templist=adj10;
+					templist=adj10.ToList();
 					break;
 				case 10:
-					templist=adj11;
+					templist=adj11.ToList();
 					break;
 				case 11:
-					templist=adj12;
+					templist=adj12.ToList();
 					break;
 			}
 			if(charact.transform.localPosition==new Vector3(audioLure.transform.localPosition.x, 0.03576379f, audioLure.transform.localPosition.z)){
@@ -531,6 +810,7 @@ public class qkUCNScript : MonoBehaviour {
 	}
 
 	IEnumerator startDucts(){
+        yield return new WaitForSeconds(30f);
 		StartCoroutine(ductCharacter(ductCharacter1));
 		yield return new WaitForSeconds(3f);
 		StartCoroutine(ductCharacter(ductCharacter2));
@@ -558,7 +838,7 @@ public class qkUCNScript : MonoBehaviour {
 			NewStage(false);
 		}
 	}
-	 
+
 
 	void NewStage(bool first){
 		if(closedDoor!=currentPlace){
@@ -609,16 +889,71 @@ public class qkUCNScript : MonoBehaviour {
 		 yield break;
 	 }
 
-	private void Strike(string reason){
+    private IEnumerator HandlePower()
+    {
+        while(!solved)
+        {
+            yield return null;
+            var time = WaitTime;
+            if (time == null) continue;
+            yield return new WaitForSeconds((float)time);
+            CurrentPower -= 1;
+            if(CurrentPower<=0)
+            {
+                Detonate("You ran out of power");
+                yield break;
+            }
+        }
+    }
+
+    private void Strike(string reason){
 		if(!solved){
 			Debug.LogFormat("[Ultimate Custom Night #{0}] Struck by {1}.", moduleId, reason);
 			GetComponent<KMBombModule>().HandleStrike(); //Strike only if the module is not solved
 		}
 		return;
 	}
-	
-	#pragma warning disable 414
-	public string TwitchHelpMessage = "Use '!{0} cycle' to cycle cameras, vent and duct! Use '!{0} cyclecams' to cycle the cameras only! Use '!{0} cameras', '!{0} vent' and '{0} duct' to change the view! Use '!{0} cam1' '!{0} cam2' and '!{0} cam3' to see cameras manualy! Use '!{0} closedoor #' to close a door! For ex. '!{0} closedoor 1' will close the door for cam 1. Use '!{0} snare #' to snare a vent route! 1 = BL; 2 = T; 3 = BR;! Use '!{0} openright' to open the right duct door and '!{0} openleft' to open the left duct door! Use '!{0} setlure #' to set the lure to a corner! Corners are numbered from 1 to 12.";
+
+    private void Detonate(string reason)
+    {
+        Type ModesType = ReflectionHelper.FindType("OtherModes");
+        bool TrainingModeActive = ModesType != null && (int)(ModesType.GetField("currentMode", BindingFlags.Public | BindingFlags.Static).GetValue(null)) == 4;
+        if (ZenModeActive || TrainingModeActive)
+        {
+            Type BombType = ReflectionHelper.FindType("Bomb");
+            BombType.GetMethod("Detonate", MainFlags).Invoke(FindObjectOfType(BombType), new object[] { });
+            return;
+        }
+        Type CommandLineType = ReflectionHelper.FindType("CommandLine");
+        if(CommandLineType!=null)
+        {
+            try
+            {
+                foreach (object commander in (IEnumerable)CommandLineType.GetField("BombCommanders", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(FindObjectOfType(CommandLineType)))
+                {
+                    commander.GetType().GetMethod("Detonate", MainFlags).Invoke(commander, new object[] { reason });
+                    return;
+                }
+            }
+            catch(Exception ex)
+            {
+                Debug.LogFormat("[Ultimate Custom Night #{0}] An error occurred while detonating the bomb with reason: {1}", moduleId, ex.ToString());
+            }
+        }
+        StartCoroutine(HandleDetonate());
+    }
+
+    private IEnumerator HandleDetonate()
+    {
+        while(true)
+        {
+            GetComponent<KMBombModule>().HandleStrike();
+            yield return null;
+        }
+    }
+
+    #pragma warning disable 414
+    public string TwitchHelpMessage = "Use '!{0} help [topic]' to get the help message of the selected topic! These can be: 'all', 'general', 'office', 'cameras', 'vent', 'duct', 'perks'";
 	#pragma warning restore 414
 	
 	void TwitchHandleForcedSolve()
@@ -628,12 +963,39 @@ public class qkUCNScript : MonoBehaviour {
 		Debug.LogFormat("[Ultimate Custom Night #{0}] Auto-solving module due to TP command requesting a force solve.", moduleId);
 		GetComponent<KMBombModule>().HandlePass();
 	}
-	
-	IEnumerator ProcessTwitchCommand(string command){
+
+    string GetTwitchPlaysId()
+    {
+        var gType = ReflectionHelper.FindType("TwitchGame", "TwitchPlaysAssembly");
+        object comp = FindObjectOfType(gType);
+        var TwitchPlaysObj = comp.GetType().GetField("Modules", MainFlags).GetValue(comp);
+        IEnumerable TwitchPlaysModules = (IEnumerable)TwitchPlaysObj;
+        foreach (object Module in TwitchPlaysModules)
+        {
+            var Behaviour = (MonoBehaviour)(Module.GetType().GetField("BombComponent", MainFlags).GetValue(Module));
+            var UCN = Behaviour.GetComponent<qkUCNScript>();
+            if (UCN == this)
+            {
+                return (string)Module.GetType().GetProperty("Code", MainFlags).GetValue(Module, null);
+            }
+        }
+        return "#";
+    }
+
+    IEnumerator ProcessTwitchCommand(string command){
 		string commandl = "";
 		int tried = 0;
-		command=command.ToLowerInvariant();
-		if(command.Equals("cycle")){
+		command=command.ToLowerInvariant().Trim();
+        string[] HelpCommand = null;
+        HelpCommands.TryGetValue(command, out HelpCommand);
+        if(HelpCommand!=null)
+        {
+            yield return null;
+            var TpId = GetTwitchPlaysId();
+            foreach (string msg in HelpCommand) yield return String.Format("sendtochat {0}", String.Format(msg, TpId));
+            yield break;
+        }
+        if (command.Equals("cycle")){
 			yield return null;
 			camButton.OnInteract();
 			camButton1.OnInteract();
@@ -774,6 +1136,53 @@ public class qkUCNScript : MonoBehaviour {
 			camButton3.OnInteract();
 			yield break;
 		}
-		yield break;
+        if(command.StartsWith("toggledoor "))
+        {
+            command = command.Replace("toggledoor ", "");
+            yield return null;
+            switch(command)
+            {
+                case "front":
+                    ToggleDoor(ref FrontVentClosed);
+                    break;
+                case "side":
+                    ToggleDoor(ref RightVentClosed);
+                    break;
+                default:
+                    yield return "sendtochaterror Invalid office door to toggle!";
+                    break;
+            }
+            yield break;
+        }
+        if(command.StartsWith("perk "))
+        {
+            command = command.Replace("perk ", "");
+            yield return null;
+            perksButton.OnInteract();
+            yield return null;
+            switch(command)
+            {
+                case "global music box":
+                case "gmb":
+                case "1":
+                    GlobalMusicBoxButton.OnInteract();
+                    break;
+                case "off":
+                case "2":
+                    OffButton.OnInteract();
+                    break;
+                default:
+                    yield return "sendtochaterror Invalid perk button!";
+                    break;
+            }
+            yield break;
+        }
+        if(command.Equals("changemusic"))
+        {
+            yield return null;
+            if (VisibilityOverride) camButton.OnInteract();
+            ChangeMusicButton.OnInteract();
+        }
+        yield break;
 	}
 }
