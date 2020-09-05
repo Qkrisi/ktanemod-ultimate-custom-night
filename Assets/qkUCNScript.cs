@@ -59,7 +59,7 @@ public partial class qkUCNScript : MonoBehaviour {
             "help all",
             new string[]
             {
-                "General help: Use '!{0} cycle' to cycle cameras, vent and duct and '!{0} [cameras/vent/duct]' to set the screen to a specific place!",
+                "General help: Use '!{0} cycle' to cycle cameras, vent and duct and '!{0} [cameras/vent/duct/perks]' to set the screen to a specific place!",
                 "Office input help: Use '!{0} toggledoor [front/side]' to toggle the front or side vent door!",
                 "Camera help: Use '!{0} cyclecams' to cycle all cameras, '!{0} [cam1/cam2/cam3]' to view a specific camera, '!{0} closedoor #' to close the door of the corresponding camera!",
                 "Vent help: Use '!{0} snare #' to snare a route! 1 = BL; 2 = T; 3 = BR",
@@ -72,7 +72,7 @@ public partial class qkUCNScript : MonoBehaviour {
             "help general",
             new string[]
             {
-                "General help: Use '!{0} cycle' to cycle cameras, vent and duct and '!{0} [cameras/vent/duct]' to set the screen to a specific place!"
+                "General help: Use '!{0} cycle' to cycle cameras, vent and duct and '!{0} [cameras/vent/duct/perks]' to set the screen to a specific place!"
             }
         },
         {
@@ -1060,7 +1060,13 @@ public partial class qkUCNScript : MonoBehaviour {
 			ductButton.OnInteract();
 			yield break;
 		}
-		if(command.Contains("snare")){
+        if (command.Equals("perks"))
+        {
+            yield return null;
+            perksButton.OnInteract();
+            yield break;
+        }
+        if (command.Contains("snare")){
 			commandl=command.Replace("snare", "");
 			if(int.TryParse(commandl, out tried)){
 				tried=int.Parse(commandl);
