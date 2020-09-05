@@ -924,6 +924,16 @@ public partial class qkUCNScript : MonoBehaviour {
             BombType.GetMethod("Detonate", MainFlags).Invoke(FindObjectOfType(BombType), new object[] { });
             return;
         }
+        if (TwitchPlaysActive)
+        {
+            Type TPBomb = ReflectionHelper.FindType("TwitchBomb", "TwitchPlaysAssembly");
+            object bomb = FindObjectOfType(TPBomb);
+            var StrikeCount = TPBomb.GetProperty("StrikeCount", MainFlags);
+            var StrikeLimit = TPBomb.GetProperty("StrikeLimit", MainFlags);
+            StrikeCount.SetValue(bomb, ((int)StrikeLimit.GetValue(bomb, null)) - 1, null);
+            TPBomb.GetMethod("CauseStrikesToExplosion", MainFlags).Invoke(bomb, new object[] { reason });
+            return;
+        }
         Type CommandLineType = ReflectionHelper.FindType("CommandLine");
         if(CommandLineType!=null)
         {
@@ -940,14 +950,14 @@ public partial class qkUCNScript : MonoBehaviour {
                 Debug.LogFormat("[Ultimate Custom Night #{0}] An error occurred while detonating the bomb with reason: {1}", moduleId, ex.ToString());
             }
         }
-        StartCoroutine(HandleDetonate());
+        StartCoroutine(HandleDetonate(reason));
     }
 
-    private IEnumerator HandleDetonate()
+    private IEnumerator HandleDetonate(string reason)
     {
         while(true)
         {
-            GetComponent<KMBombModule>().HandleStrike();
+            GetComponent<KMGameCommands>().CauseStrike(reason);
             yield return null;
         }
     }
