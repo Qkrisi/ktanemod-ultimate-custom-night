@@ -8,6 +8,8 @@ public partial class qkUCNScript
 { 
     private IEnumerator HandleAfton()
     {
+        Type FactoryType = ReflectionHelper.FindType("FactoryAssembly.FactoryRoom", "FactoryAssembly");
+        if (FactoryType != null && FindObjectOfType(FactoryType) != null) yield break;
         yield return new WaitForSeconds(!TwitchPlaysActive ? 10f : 15f);
         while(true)
         {

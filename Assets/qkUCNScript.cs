@@ -472,6 +472,7 @@ public partial class qkUCNScript : MonoBehaviour {
             {
                 ChicaAttack = false;
                 StopCoroutine(WaitForChicaPress());
+                StopCoroutine(HandleChica());
                 StartCoroutine(HandleChica());
             }
             return false;

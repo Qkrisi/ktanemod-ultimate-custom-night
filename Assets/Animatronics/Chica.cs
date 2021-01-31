@@ -27,6 +27,7 @@ public partial class qkUCNScript
             if(!globalMusicBox && RNG.Range(1, 11)==1)
             {
                 ChicaAttack = true;
+                StopCoroutine(WaitForChicaPress());
                 StartCoroutine(WaitForChicaPress());
                 yield break;
             }
@@ -36,10 +37,11 @@ public partial class qkUCNScript
 
     private IEnumerator WaitForChicaPress()
     {
-        yield return new WaitForSeconds(!TwitchPlaysActive ? 5f : 10f);
+        yield return new WaitForSeconds(!TwitchPlaysActive ? 20f : 30f);
         if(ChicaAttack && !solved)
         {
             Strike("Chica");
+            StopCoroutine(HandleChica());
             StartCoroutine(HandleChica());
         }
     }
