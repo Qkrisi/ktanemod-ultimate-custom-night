@@ -24,16 +24,19 @@ public partial class qkUCNScript
                 MethodInfo TurnOn = GetLightMethod("TurnOn");
                 MethodInfo TurnOff = GetLightMethod("TurnOff");
                 var LightObject = FindObjectOfType(LightType);
-                Action<MethodInfo, bool> InvokeLight = (act, arg) => act.Invoke(LightObject, new object[] { arg });
+                Action<MethodInfo> InvokeLight = (act) => {
+					act.Invoke(LightObject, new object[] { true });
+					act.Invoke(LightObject, new object[] { false });
+				};
                 for(int i = 0;i<5;i++)
                 {
-                    InvokeLight(TurnOff, false);
+                    InvokeLight(TurnOff);
                     yield return new WaitForSeconds(.4f);
-                    InvokeLight(TurnOn, true);
+                    InvokeLight(TurnOn);
                     yield return new WaitForSeconds(.4f);
                 }
-                InvokeLight(TurnOff, false);
-                StartCoroutine(WaitForAftonPress(() => InvokeLight(TurnOn, true)));
+                InvokeLight(TurnOff);
+                StartCoroutine(WaitForAftonPress(() => InvokeLight(TurnOn)));
                 yield break;
             }
         }
