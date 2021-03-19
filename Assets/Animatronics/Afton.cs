@@ -28,6 +28,7 @@ public partial class qkUCNScript
 					act.Invoke(LightObject, new object[] { true });
 					act.Invoke(LightObject, new object[] { false });
 				};
+				Audio.PlaySoundAtTransform("ventbang", transform);
                 for(int i = 0;i<5;i++)
                 {
                     InvokeLight(TurnOff);
