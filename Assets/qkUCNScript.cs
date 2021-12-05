@@ -60,7 +60,7 @@ public partial class qkUCNScript : MonoBehaviour {
             new string[]
             {
                 "General help: Use '!{0} cycle' to cycle cameras, vent and duct and '!{0} [cameras/vent/duct/perks]' to set the screen to a specific place!",
-                "Office input help: Use '!{0} toggledoor [front/side]' to toggle the front or side vent door!",
+                "Office input help: Use '!{0} door [front/side]' to toggle the front or side vent door!",
                 "Camera help: Use '!{0} cyclecams' to cycle all cameras, '!{0} [cam1/cam2/cam3]' to view a specific camera, '!{0} closedoor #' to close the door of the corresponding camera!",
                 "Vent help: Use '!{0} snare #' to snare a route! 1 = BL; 2 = T; 3 = BR",
                 "Duct help: Use '!{0} open[right/left]' to open the specified duct door and '!{0} setlure #' to set the audio lure to the specified corner (1-12)!",
@@ -79,7 +79,7 @@ public partial class qkUCNScript : MonoBehaviour {
             "help office",
             new string[]
             {
-                "Office input help: Use '!{0} toggledoor [front/side]' to toggle the front or side vent door!"
+                "Office input help: Use '!{0} door [front/side]' to toggle the front or side vent door!"
             }
         },
         {
@@ -1153,9 +1153,9 @@ public partial class qkUCNScript : MonoBehaviour {
 			camButton3.OnInteract();
 			yield break;
 		}
-        if(command.StartsWith("toggledoor "))
+        if(command.StartsWith("door "))
         {
-            command = command.Replace("toggledoor ", "");
+            command = command.Replace("door ", "");
             yield return null;
             switch(command)
             {

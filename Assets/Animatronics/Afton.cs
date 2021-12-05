@@ -10,7 +10,7 @@ public partial class qkUCNScript
     {
         Type FactoryType = ReflectionHelper.FindType("FactoryAssembly.FactoryRoom", "FactoryAssembly");
         if (FactoryType != null && FindObjectOfType(FactoryType) != null) yield break;
-        yield return new WaitForSeconds(!TwitchPlaysActive ? 10f : 15f);
+        yield return new WaitForSeconds(!TwitchPlaysActive ? 10f : 30f);
         while(true)
         {
             if (solved) yield break;
