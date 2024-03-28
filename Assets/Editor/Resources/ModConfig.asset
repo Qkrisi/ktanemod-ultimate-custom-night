@@ -24,10 +24,10 @@ MonoBehaviour:
     TP supported
 
 
-    Temporarly manual page: https://docs.google.com/document/d/1I-mUGGav4cqHKpVcTpaGQ45hzuonsH6VpmcQfFX1BXo/edit?usp=sharing
+    Manual: https://ktane.timwi.de/HTML/Ultimate%20Custom%20Night.html
 
 
     moduleID: qkUCN'
-  version: 2.2.1
+  version: 2.2.2
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 54ec901bc93b0471b8de4368267b369a, type: 3}
